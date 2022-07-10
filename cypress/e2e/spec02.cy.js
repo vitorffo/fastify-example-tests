@@ -6,7 +6,6 @@ it('shows the fruit returned by the server', () => {
   //
   // visit the page
   // https://on.cypress.io/visit
-  //
   // wait for the app to make the network call
   // (there might be a delay)
   // https://on.cypress.io/wait
@@ -17,4 +16,20 @@ it('shows the fruit returned by the server', () => {
   // https://on.cypress.io/its
   // https://on.cypress.io/then
   // https://on.cypress.io/contains
+
+  cy.intercept('GET', '/fruit').as('fruit')
+  cy.visit('/')
+  cy.wait('@fruit')
+    .then((interception) => {
+      cy.contains('#fruit', interception.response.body.fruit)
+    })
+
+  //bahmutov's solution
+  cy.visit('/')
+  cy.wait('@fruit')
+    .its('response.body.fruit')
+    .then(cy.log)
+    .then(fruit => {
+      cy.contains('#fruit', fruit)
+    })
 })
