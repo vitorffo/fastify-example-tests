@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-it('shows the fruit returned by the server', () => {
+it('shows the fruit returned by the server [MY SOLUTION]', () => {
   // spy on the network call the application makes
   // tip: use https://on.cypress.io/intercept
   //
@@ -23,8 +23,10 @@ it('shows the fruit returned by the server', () => {
     .then((interception) => {
       cy.contains('#fruit', interception.response.body.fruit)
     })
+})
 
-  //bahmutov's solution
+it('shows the fruit returned by the server [BAHMUTOV]', () => {
+  cy.intercept('GET', '/fruit').as('fruit')
   cy.visit('/')
   cy.wait('@fruit')
     .its('response.body.fruit')

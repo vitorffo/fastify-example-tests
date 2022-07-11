@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-it('shows the fruit returned from the test', () => {
+it('shows the fruit returned from the test [MY SOLUTION]', () => {
   // stub the network call the application makes
   // to the server using "GET /fruit"
   // return "Kiwi" json object
@@ -15,4 +15,15 @@ it('shows the fruit returned from the test', () => {
   //
   // confirm the application shows the fruit "Kiwi"
   // https://on.cypress.io/contains
+  const fruit = 'Kiwi'
+
+  cy.intercept('GET', '/fruit', { fruit })
+    .as('fruit')
+
+  cy.visit('/')
+
+  cy.wait('@fruit')
+
+  cy.contains('#fruit', fruit)
+
 })
