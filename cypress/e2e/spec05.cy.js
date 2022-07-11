@@ -10,4 +10,35 @@ it('shows a different fruit after reloading the page', () => {
   // confirm the fruit name is different
   //
   // tip: use nested https://on.cypress.io/then callbacks
+  cy.visit('/')
+
+  cy.get('#fruit')
+    .should('not.contain', 'loading')
+    .then((fruit) => {
+      const firstFruit = fruit.text()
+      cy.log(firstFruit)
+
+      cy.reload()
+
+      cy.get('#fruit')
+        .should('not.contain', 'loading')
+        .and('not.equal', firstFruit)
+    })
+
+})
+
+it('shows a different fruit after reloading the page [bah]', () => {
+  cy.visit('/')
+
+  cy.get('#fruit')
+    .should('not.include.text', 'loading')
+    .invoke('text')
+    .then(cy.log)
+    .then((fruit) => {
+      cy.reload()
+
+      cy.get('#fruit')
+        .should('not.include.text', 'loading')
+        .and('not.have.text', fruit)
+    })
 })
