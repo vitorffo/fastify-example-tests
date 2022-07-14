@@ -19,7 +19,13 @@ it('shows the loading element then fruit from a fixture', () => {
   cy.visit('/')
 
   cy.get('#fruit')
+    .should('contain.text', 'loading...')
+
+  cy.get('#fruit')
     .should('contain.text', 'apple')
+
+  cy.get('#fruit')
+    .should('not.contain.text', 'loading...')
 })
 
 it('shows the loading element then fruit from a fixture [BAH]', () => {
