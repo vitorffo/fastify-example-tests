@@ -69,7 +69,7 @@ it('finds all fruits [BAH]', () => {
 // import { recurse } from 'cypress-recurse'
 
 import { recurse } from 'cypress-recurse'
-it.only('finds all the fruit using cypress-recurse', () => {
+it('finds all the fruit using cypress-recurse', () => {
   // let's use the "recurse" function to reload the page
   // until we see a repeated fruit. Then we can stop
   // since we have seen all the fruits.
@@ -98,7 +98,8 @@ it.only('finds all the fruit using cypress-recurse', () => {
 
     {
       post() {
-        cy.get('@actualFruit').then((text) => {
+        cy.get('@actualFruit')
+          .then((text) => {
           fruits.add(text)
         })
         cy.reload()
