@@ -6,19 +6,36 @@ it('does not intercept the requests made using cy.request', () => {
   // set up the intercept and make the cy.request call
   cy.intercept('GET', '/fruit', cy.spy().as('getFruit'))
   // Confirm the cy.intercept does not "see" cy.request network calls
+
+  cy.request('GET', '/fruit')
+
+  cy.get('@getFruit')
+    .its('callCount')
+    .should('eq', 0)
 })
 
 it('catches the request made by the test using fetch', () => {
   // The test itself can use the "fetch" to make network calls
   // Use "fetch" instead ot request to make a network call
   // and confirm that cy.intercept does "see" the network call
-  //
   // set up the intercept
   // make the fetch call and confirm the response body
   // has the property "fruit"
   // check that the intercept has worked using cy.wait
-  //
   // tip 1: make sure to make the "fetch" call AFTER the cy.intercept
+  cy.intercept('GET', '/fruit', cy.spy().as('getFruit')).as('fruit')
+
+  fetch('/fruit')
+
+  cy.wait('@fruit').then( (interception) => {
+    let body = cy.wrap(interception.response.body)
+
+    body.should('have.property', 'fruit')
+  })
+
+  cy.get('@getFruit')
+    .its('callCount')
+    .should('eq', 1)
 })
 
 it('waits for the fetch to finish using cy.wrap command', () => {
@@ -28,10 +45,17 @@ it('waits for the fetch to finish using cy.wrap command', () => {
   // around the promise returned by the "fetch"
   // from the response, get the json by invoking the "json" method
   // confirm the body has the property "fruit"
+  cy.intercept('GET', '/fruit', cy.spy().as('getFruit')).as('fruit')
+    .then(() => {
+      cy.wrap(fetch('/fruit'))
+        .invoke('json')
+        .should('have.property', 'fruit')
+    })
 })
 
 it('invokes window.fetch using the cy.invoke command', () => {
   // set up the intercept
+  cy.intercept('GET', '/fruit')
   // use cy.window() command to get the app's window object
   // https://on.cypress.io/window and https://on.cypress.io/invoke
   // and invoke the method "fetch" with parameter "/fruit"
@@ -39,4 +63,8 @@ it('invokes window.fetch using the cy.invoke command', () => {
   // invoke the method "json" on the response
   // and confirm the body has the property "fruit"
   // from the intercept get the fruit and confirm the "fetch" response body
+  cy.window()
+    .invoke('fetch', '/fruit')
+    .invoke('json')
+    .should('have.property', 'fruit')
 })
