@@ -47,4 +47,6 @@ it('validates the server response using OpenAPI spec', () => {
   // Note: make sure the page shows a fruit
   // otherwise the error in the intercept might be silently swallowed
   cy.contains('#fruit', /^[A-Z]/)
+  cy.reload()
+  cy.reload()
 })
