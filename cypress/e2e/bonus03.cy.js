@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import sale from '../fixtures/sale.json'
 
 describe('make the request and compare to the fixture', () => {
   // make a request to GET /sale
@@ -9,12 +10,28 @@ describe('make the request and compare to the fixture', () => {
   // https://on.cypress.io/fixture
   // compare the response body to the fixture
   // Tip: always use the "deep.equal" assertion to compare the objects
-  it('gives a response matching a fixture object')
-
-  // load the fixture first, then make the request
-  // and compare the response body to the fixture object
+  it('gives a response matching a fixture object', () => {
+    // load the fixture first, then make the request
+    cy.fixture('/sale').then((salefix) => {
+      cy.request('/sale')
+      .its('body')
+      .then((salesServer) => {
+        // and compare the response body to the fixture object
+        expect(salefix).to.deep.equal(salesServer)
+      })
+    })
+  })
+  
   it(
-    'gives a response matching a fixture object, loads the fixture first',
+    'gives a response matching a fixture object, loads the fixture first', () => {
+      cy.fixture("sale").as('salesFixture')
+    
+      cy.request('/sale')
+      .its('body')
+      .then(function(salesServer) {
+        expect(salesServer).to.deep.equal(this.salesFixture)
+      })
+    }
   )
 })
 
@@ -22,7 +39,14 @@ describe('make the request and compare to the fixture', () => {
 // and use it as a local variable in the spec
 describe('using JSON import', () => {
   it(
-    'gives a response matching a fixture object loaded using import keyword',
+    'gives a response matching a fixture object loaded using import keyword', () => {
+
+      cy.request('/sale')
+      .its('body')
+      .then((saleServer) => {
+        expect(saleServer).to.deep.equal(sale)
+      })
+    }
   )
 })
 
@@ -31,22 +55,38 @@ describe('load fixture before each test', () => {
   // https://on.cypress.io/fixture
   // and save as an alias
   // https://on.cypress.io/as
-  beforeEach(() => {})
+  beforeEach(() => {
+    cy.fixture('sale').as('salesFixture')
+  })
 
   // use the "function () { ... }" test callback syntax
   // to be able to access the fixture using "this.<alias name>" syntax
-  it('gives a response matching an alias set as a property')
+  it('gives a response matching an alias set as a property', function() {
+    cy.request('/sale')
+      .its('body')
+      .then(function(salesServer) {
+        expect(salesServer).to.deep.equal(this.salesFixture)
+      })
+  })
 })
 
-describe('Load once into a local variable', () => {
+describe('Load once into a local variable', function () {
   // define a local variable and set it value once
   // from a "before" hook that loads the fixture
   // https://on.cypress.io/fixture
-  before(() => {})
+  before(() => {
+    cy.fixture('sale').as('salesFixture')
+  })
 
   // in the test use the local variable
   // to check the response
-  it('gives a response matching a fixture loaded once')
+  it('gives a response matching a fixture loaded once', function () {
+    cy.request('/sale')
+    .its('body')
+    .then(function(salesServer){
+      expect(salesServer).to.deep.equal(this.salesFixture)
+    })
+  })
 })
 
 describe('load once, reset the alias', () => {

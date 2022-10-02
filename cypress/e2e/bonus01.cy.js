@@ -14,11 +14,10 @@ it('shows zero or more fruits', () => {
   // spy on GET /fruits call and give it an alias
   // https://on.cypress.io/intercept
   // https://on.cypress.io/as
-  //
+  cy.intercept('/fruits').as('getFruits')
   // visit the page /fruits.html
   // https://on.cypress.io/visit
-  //
-  // the page loads one or more fruits
+  cy.visit('/fruits.html')
   // BUT
   // it might get no fruits back from the server
   // wait for the network call to finish
@@ -26,7 +25,21 @@ it('shows zero or more fruits', () => {
   // from the server response, get the list of fruits
   // and depending on the number of fruits,
   // check the page to confirm
-  //
+  cy.wait('@getFruits')
+  .its('response.body')
+  .then((fruits) => {
+    if (fruits.length === 0) {
+      cy.contains('#fruits', 'No fruits')
+    } else {
+      cy.get('#fruits>li').should(
+        'have.length',
+        fruits.length
+      )
+      fruits.forEach((fruit) => {
+        cy.contains('#fruits>li', fruit)
+      })
+    }
+  })
   // if there are no fruits, confirm that
   // the page contains the text "No fruits found"
   // https://on.cypress.io/contains
@@ -44,6 +57,11 @@ it('shows zero fruits', () => {
   // https://on.cypress.io/visit
   // confirm there are no fruits
   // https://on.cypress.io/contains
+  cy.intercept('GET', '/fruits', [])
+
+  cy.visit('/fruits.html')
+
+  cy.contains('#fruits', 'No fruits')
 })
 
 it('shows two fruits', () => {
@@ -54,4 +72,11 @@ it('shows two fruits', () => {
   // https://on.cypress.io/visit
   // confirm there are two fruits
   // https://on.cypress.io/contains
+  cy.intercept('GET', '/fruits', ['apples', 'kiwi'])
+
+  cy.visit('/fruits.html')
+
+  cy.contains('#fruits', 'apples')
+
+  cy.contains('#fruits', 'kiwi')
 })
