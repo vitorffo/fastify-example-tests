@@ -41,7 +41,7 @@ it('shows zero or more fruits', () => {
     }
   })
   // if there are no fruits, confirm that
-  // the page contains the text "No fruits found"
+  // the page contains the text "No fruits"
   // https://on.cypress.io/contains
   // else
   //   confirm each fruit returned by the server is shown
